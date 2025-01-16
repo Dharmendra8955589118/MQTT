@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>MQTT Data Viewer</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/paho-mqtt/1.0.3/mqttws31.min.js"></script>
+</head>
+<body>
+    <h1>MQTT Data Viewer</h1>
+    <div id="data"></div>
+
+    <script>
+        // Create a client instance
+        var client = new Paho.MQTT.Client("wss://0431edb549d64e0aae6e355d0428316f.s1.eu.hivemq.cloud:8884/mqtt", "clientId");
+
+        // Set callback handlers
+        client.onConnectionLost = onConnectionLost;
+        client.onMessageArrived = onMessageArrived;
+
+        // Connect the client
+        client.connect({
+            onSuccess: onConnect,
+            useSSL: true,
+            userName: "Dharmendra", // Add your username
+            password: "Dhar.789@"  // Add your password
+        });
+
+        // Called when the client connects
+        function onConnect() {
+            console.log("Connected");
+            // Subscribe to the topic
+            client.subscribe("Tank/topic");
+        }
+
+        // Called when the client loses its connection
+        function onConnectionLost(responseObject) {
+            if (responseObject.errorCode !== 0) {
+                console.log("onConnectionLost:" + responseObject.errorMessage);
+            }
+        }
+
+        // Called when a message arrives
+        function onMessageArrived(message) {
+            console.log("onMessageArrived:" + message.payloadString);
+            document.getElementById("data").innerHTML += "<p>" + message.payloadString + "</p>";
+        }
+    </script>
+</body>
+</html>
